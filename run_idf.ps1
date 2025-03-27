@@ -1,0 +1,1 @@
+C:\Users\meupc\esp\v5.4\esp-idf\export.ps1

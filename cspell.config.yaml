@@ -1,0 +1,28 @@
+version: "0.2"
+import:
+  - "@cspell/dict-pt-br/cspell-ext.json"
+language: en
+ignorePaths:
+  - .pylintrc
+  - .gitignore
+  - .gitattributes
+  - cspell.config.yaml
+dictionaries:
+  - en_us
+  - en-gb
+  - pt-br
+  - cpp
+  - bash
+  - aws
+  - softwareTerms
+words:
+  - LOGI
+  - mipi
+  - MOSI
+  - pclk
+  - psram
+  - quadhd
+  - quadwp
+  - sclk
+  - SPIRAM
+  - xtensa

@@ -1,0 +1,35 @@
+{
+    "files.associations": {
+        "*.h": "c",
+        "memory_resource": "c",
+        "cstdint": "c",
+        "cstdlib": "c"
+    },
+    "idf.portWin": "COM5",
+    "idf.flashType": "UART",
+    "cmake.cmakePath": "${env:IDF_TOOLS_PATH}/tools/cmake/3.30.2/bin/cmake.exe",
+    "C_Cpp.clang_format_style": "file",
+    "C_Cpp.clang_format_path": "${env:IDF_TOOLS_PATH}/tools/esp-clang/esp-18.1.2_20240912/esp-clang/bin/clang-format.exe",
+    "C_Cpp.codeAnalysis.clangTidy.path": "${env:IDF_TOOLS_PATH}/tools/esp-clang/esp-18.1.2_20240912/esp-clang/bin/clang-tidy.exe",
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true,
+    "C_Cpp.default.compilerPath": "${env:IDF_TOOLS_PATH}/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/xtensa-esp32-elf-gcc.exe",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "idf.customExtraVars": {
+        "OPENOCD_SCRIPTS": "${env:IDF_TOOLS_PATH}/tools/openocd-esp32/v0.12.0-esp32-20230419/openocd-esp32/share/openocd/scripts",
+        "IDF_CCACHE_ENABLE": "1",
+        "ESP_ROM_ELF_DIR": "${env:IDF_TOOLS_PATH}/tools/esp-rom-elfs/20241011/",
+        "IDF_TARGET": "esp32"
+    },
+    "idf.openOcdConfigs": [
+        "board/esp32-wrover-kit-3.3v.cfg"
+    ],
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.path": "${env:IDF_TOOLS_PATH}/tools/esp-clang/esp-18.1.2_20240912/esp-clang/bin/clangd.exe",
+    "clangd.arguments": [
+        "-log=verbose",
+        "-pretty",
+        "-format-style=file"
+    ]
+}
