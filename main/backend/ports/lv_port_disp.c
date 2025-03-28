@@ -169,31 +169,31 @@ static void disp_init(esp_lcd_panel_io_handle_t* io_handle) {
 }
 
 static void lvgl_port_update_callback(lv_display_t* disp) {
-    esp_lcd_panel_handle_t panel_handle = lv_display_get_user_data(disp);
-    lv_display_rotation_t rotation      = lv_display_get_rotation(disp);
+    // esp_lcd_panel_handle_t panel_handle = lv_display_get_user_data(disp);
+    // lv_display_rotation_t rotation      = lv_display_get_rotation(disp);
 
-    switch (rotation) {
-        case LV_DISPLAY_ROTATION_0:
-            // Rotate LCD display
-            esp_lcd_panel_swap_xy(panel_handle, false);
-            esp_lcd_panel_mirror(panel_handle, true, false);
-            break;
-        case LV_DISPLAY_ROTATION_90:
-            // Rotate LCD display
-            esp_lcd_panel_swap_xy(panel_handle, true);
-            esp_lcd_panel_mirror(panel_handle, true, true);
-            break;
-        case LV_DISPLAY_ROTATION_180:
-            // Rotate LCD display
-            esp_lcd_panel_swap_xy(panel_handle, false);
-            esp_lcd_panel_mirror(panel_handle, false, true);
-            break;
-        case LV_DISPLAY_ROTATION_270:
-            // Rotate LCD display
-            esp_lcd_panel_swap_xy(panel_handle, true);
-            esp_lcd_panel_mirror(panel_handle, false, false);
-            break;
-    }
+    // switch (rotation) {
+    //     case LV_DISPLAY_ROTATION_0:
+    //         // Rotate LCD display
+    //         esp_lcd_panel_swap_xy(panel_handle, false);
+    //         esp_lcd_panel_mirror(panel_handle, true, false);
+    //         break;
+    //     case LV_DISPLAY_ROTATION_90:
+    //         // Rotate LCD display
+    //         esp_lcd_panel_swap_xy(panel_handle, true);
+    //         esp_lcd_panel_mirror(panel_handle, true, true);
+    //         break;
+    //     case LV_DISPLAY_ROTATION_180:
+    //         // Rotate LCD display
+    //         esp_lcd_panel_swap_xy(panel_handle, false);
+    //         esp_lcd_panel_mirror(panel_handle, false, true);
+    //         break;
+    //     case LV_DISPLAY_ROTATION_270:
+    //         // Rotate LCD display
+    //         esp_lcd_panel_swap_xy(panel_handle, true);
+    //         esp_lcd_panel_mirror(panel_handle, false, false);
+    //         break;
+    // }
 }
 
 /*

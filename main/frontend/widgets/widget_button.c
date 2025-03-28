@@ -25,8 +25,11 @@ esp_err_t widget_button_create(WidgetButton** widget, lv_obj_t* parent, char* te
 }
 
 esp_err_t widget_button_destroy(WidgetButton* widget) {
-    lv_obj_delete(widget->button);
-    lv_obj_delete(widget->label);
+    if (!widget) return ESP_ERR_INVALID_STATE;
+
+    if (widget->button) lv_obj_delete(widget->button);
+    if (widget->label) lv_obj_delete(widget->label);
+
     free(widget);
     return ESP_OK;
 }

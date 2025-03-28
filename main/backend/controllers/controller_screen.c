@@ -21,8 +21,8 @@ esp_err_t controller_screen_init(StackScreen** stack_screen) {
         ESP_LOGE(STACK_TAG, "Failed to allocate memory for stack_screen");
         return ESP_ERR_NO_MEM;
     }
-    (*stack_screen)->current = 0;
-    (*stack_screen)->head    = 0;
+    (*stack_screen)->current = NULL;
+    (*stack_screen)->head    = NULL;
     ESP_LOGI(STACK_TAG, "Stack Screen initialized");
     return ESP_OK;
 }

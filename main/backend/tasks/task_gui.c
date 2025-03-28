@@ -8,11 +8,10 @@
 #include "lv_init.h"
 #include "misc/lv_timer.h"
 
-char* TAG = "GUI_TASK";
+char* TAG = "[GUI_TASK]";
 
 // GUI Task (handles LVGL updates)
 void task_gui(void* args) {
-    SemaphoreHandle_t lvgl_mutex    = xSemaphoreCreateMutex();
     StackScreen* stack_screen       = NULL;
     ScreenInterface* screen_encoder = NULL;
 
@@ -24,7 +23,7 @@ void task_gui(void* args) {
 
     ESP_LOGI(TAG, "Creating UI...");
     ESP_ERROR_CHECK(controller_screen_init(&stack_screen));
-    ESP_ERROR_CHECK(screen_encoder_init(&screen_encoder, NULL));
+    ESP_ERROR_CHECK(screen_encoder_init(&screen_encoder, stack_screen));
     stack_screen->head = screen_encoder;
     ESP_LOGI(TAG, "UI created");
 
@@ -33,11 +32,9 @@ void task_gui(void* args) {
     uint32_t time_threshold_msg = 1000 / CONFIG_FREERTOS_HZ;
 
     for (;;) {
-        if (pdTRUE == xSemaphoreTake(lvgl_mutex, 50)) {
-            ESP_ERROR_CHECK(controller_screen_draw(stack_screen));
-            time_next_ms = lv_timer_handler();  // LVGL update
-            xSemaphoreGive(lvgl_mutex);
-        }
+        stack_screen->current->draw(stack_screen->current);
+        time_next_ms = lv_timer_handler();  // LVGL update
+
         time_next_ms = (time_threshold_msg > time_next_ms) ? time_threshold_msg : time_next_ms;
         vTaskDelay(pdMS_TO_TICKS(time_next_ms));  // Delay 10ms
     }
