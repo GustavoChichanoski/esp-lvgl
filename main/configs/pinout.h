@@ -5,10 +5,6 @@
 extern "C" {
 #endif
 
-#include "hal/i2c_types.h"
-#include "soc/gpio_num.h"
-
-
 #define ENCODER_A           ((gpio_num_t)GPIO_NUM_4)
 #define ENCODER_B           ((gpio_num_t)GPIO_NUM_5)
 

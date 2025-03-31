@@ -13,16 +13,16 @@
 #define ADS_STEP_UV    (125)
 #define ADS_DATA_SIZE  (2)
 
-const char TAG_MAIN[] = "[MAIN]";
+const char kTagMain[] = "[MAIN]";
 
 // Main Function (app_main)
 void app_main(void) {
 
     // Create GUI Task
-    xTaskCreatePinnedToCore(task_gui, "task_gui", GUI_STACK_SIZE, NULL, 5, NULL, 1);
+    xTaskCreatePinnedToCore(taskGui, "task_gui", GUI_STACK_SIZE, NULL, 5, NULL, 1);
 
     while (1) {
-        ESP_LOGI(TAG_MAIN, "System running...");
+        ESP_LOGI(kTagMain, "System running...");
         vTaskDelay(pdMS_TO_TICKS(10000));
     }
 }

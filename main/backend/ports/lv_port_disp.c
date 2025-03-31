@@ -19,7 +19,6 @@
  *      DEFINES
  *********************/
 
-
 #define CONFIG_LCD_HOST       (SPI2_HOST)
 
 #define BOARD_LCD_MISO        (19)
@@ -49,9 +48,9 @@ esp_lcd_panel_handle_t panel_handle = NULL;
  * STATIC PROTOTYPES
  **********************/
 
-static void disp_init(esp_lcd_panel_io_handle_t* io_handle);
+static void dispInit(esp_lcd_panel_io_handle_t* io_handle);
 
-static void disp_flush(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map);
+static void dispFlush(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map);
 
 /**********************
  * GLOBAL FUNCTIONS
@@ -71,8 +70,10 @@ static void disp_flush(lv_display_t* disp, const lv_area_t* area, uint8_t* px_ma
  * @param user_ctx User context, expected to be a pointer to the LVGL display.
  * @return false to indicate no further action is required by the panel IO.
  */
-static bool lvgl_flush_ready_notify(esp_lcd_panel_io_handle_t panel_io,
-                                    esp_lcd_panel_io_event_data_t* edata, void* user_ctx) {
+static bool lvglFlushReadyNotify(esp_lcd_panel_io_handle_t panel_io,
+                                 esp_lcd_panel_io_event_data_t* edata, void* user_ctx) {
+    (void)panel_io;
+    (void)edata;
     lv_display_flush_ready((lv_display_t*)user_ctx);
     return false;
 }
@@ -84,7 +85,8 @@ static bool lvgl_flush_ready_notify(esp_lcd_panel_io_handle_t panel_io,
  * counter. It is used to keep track of time elapsed since the last call to
  * lv_tick_inc() and is used to schedule LVGL tasks.
  */
-static void increase_lvgl_tick(void* arg) {
+static void increaseLvglTick(void* arg) {
+    (void)arg;
     /* Tell LVGL how many milliseconds has elapsed */
     lv_tick_inc(LVGL_TICK_PERIOD_MS);
 }
@@ -100,7 +102,7 @@ static void increase_lvgl_tick(void* arg) {
  * @note The buffers are allocated with the @ref LV_ATTRIBUTE_MEM_ALIGN attribute
  *       to ensure that they are aligned to the display's requirements.
  */
-static void lv_port_allocate_buffer(lv_display_t* display) {
+static void lvPortAllocateBuffer(lv_display_t* display) {
     ESP_LOGI(DEBUG_TAG, "Allocating buffers in SPIRAM...");
     ESP_LOGI(DEBUG_TAG, "Buffer size: %d bytes", BUFFER_SIZE);
     LV_ATTRIBUTE_MEM_ALIGN
@@ -124,14 +126,14 @@ static void lv_port_allocate_buffer(lv_display_t* display) {
 void lv_port_disp_init(void) {
     esp_lcd_panel_io_handle_t io_handle = NULL;
     ESP_LOGI(DEBUG_TAG, "Initializing display...");
-    disp_init(&io_handle);
+    dispInit(&io_handle);
 
     ESP_LOGI(DEBUG_TAG, "Creating LVGL display...");
     lv_display_t* disp = lv_display_create(CONFIG_LCD_H_RES, CONFIG_LCD_V_RES);
     LV_ASSERT_MALLOC(disp);
 
     // Allocate buffers to lvgl
-    lv_port_allocate_buffer(disp);
+    lvPortAllocateBuffer(disp);
 
     // associate the mipi panel handle to the display
     lv_display_set_user_data(disp, panel_handle);
@@ -139,20 +141,21 @@ void lv_port_disp_init(void) {
     lv_display_set_color_format(disp, LV_COLOR_FORMAT_RGB565);
     // set the callback which can copy the rendered image to an area of the
     // display
-    lv_display_set_flush_cb(disp, disp_flush);
+    lv_display_set_flush_cb(disp, dispFlush);
 
     ESP_LOGI(DEBUG_TAG, "Install LVGL tick timer");
     // Tick interface for LVGL (using esp_timer to generate 2ms periodic event)
-    const esp_timer_create_args_t lvgl_tick_timer_args = {.callback = &increase_lvgl_tick,
+    const esp_timer_create_args_t lvgl_tick_timer_args = {.callback = &increaseLvglTick,
                                                           .name     = "lvgl_tick"};
 
     esp_timer_handle_t lvgl_tick_timer = NULL;
     ESP_ERROR_CHECK(esp_timer_create(&lvgl_tick_timer_args, &lvgl_tick_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(lvgl_tick_timer, LVGL_TICK_PERIOD_MS * 1000));
+    ESP_ERROR_CHECK(
+        esp_timer_start_periodic(lvgl_tick_timer, (uint64_t)LVGL_TICK_PERIOD_MS * 1000));
 
     ESP_LOGI(DEBUG_TAG, "Register io panel event callback for LVGL flush ready notification");
     const esp_lcd_panel_io_callbacks_t cbs = {
-        .on_color_trans_done = lvgl_flush_ready_notify,
+        .on_color_trans_done = lvglFlushReadyNotify,
     };
     /* Register done callback */
     ESP_ERROR_CHECK(esp_lcd_panel_io_register_event_callbacks(io_handle, &cbs, disp));
@@ -170,7 +173,7 @@ void lv_port_disp_init(void) {
  * @note This function is called by lv_port_disp_init and should not be called
  *       directly. It is intended to be used internally by the LVGL port.
  */
-static void disp_init(esp_lcd_panel_io_handle_t* io_handle) {
+static void dispInit(esp_lcd_panel_io_handle_t* io_handle) {
     spi_bus_config_t bus_cfg = {.sclk_io_num     = BOARD_LCD_SCK,
                                 .mosi_io_num     = BOARD_LCD_MOSI,
                                 .miso_io_num     = BOARD_LCD_MISO,
@@ -212,7 +215,7 @@ static void disp_init(esp_lcd_panel_io_handle_t* io_handle) {
  * This callback is called when the display rotation changes.
  * It updates the display rotation of the LCD panel.
  */
-static void lvgl_port_update_callback(lv_display_t* disp) {
+static void lvglPortUpdateCallback(lv_display_t* disp) {
     // esp_lcd_panel_handle_t panel_handle = lv_display_get_user_data(disp);
     // lv_display_rotation_t rotation      = lv_display_get_rotation(disp);
 
@@ -247,8 +250,8 @@ static void lvgl_port_update_callback(lv_display_t* disp) {
  * @param[in] area The area that should be updated.
  * @param[in] px_map Pixel map to be rendered.
  */
-static void disp_flush(lv_display_t* display, const lv_area_t* area, uint8_t* px_map) {
-    lvgl_port_update_callback(display);
+static void dispFlush(lv_display_t* display, const lv_area_t* area, uint8_t* px_map) {
+    lvglPortUpdateCallback(display);
 
     int offset_x1 = area->x1;
     int offset_x2 = area->x2;

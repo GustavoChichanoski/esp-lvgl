@@ -5,7 +5,7 @@
 
 #define COLOR_GRADIENT_SIZE 255
 
-const uint32_t COLOR_GRADIENT[COLOR_GRADIENT_SIZE] = {
+const uint32_t kColorGradient[COLOR_GRADIENT_SIZE] = {
     0x193E7E,    0x1A407F,    0x1B4180,    0x1C4281,    0x1C4382,
     0x1D4583,    0x1E4684,    0x1F4785,    0x1F4886,    0x204987,
     0x214B88,    0x224C89,    0x234D8A,    0x234E8B,    0x244F8C,

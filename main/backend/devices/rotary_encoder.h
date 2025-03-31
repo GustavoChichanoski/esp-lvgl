@@ -10,8 +10,8 @@ extern "C" {
 #define ENCODER_ROTATE_CLOCKWISE      (0)
 #define ENCODER_ROTATE_ANTI_CLOCKWISE (1)
 
-Encoder* get_encoder();
-void update_encoder_position(void* arg);
+Encoder* encoderGet();
+void encoderUpdatePosition(void* arg);
 
 #ifdef __cplusplus
 } /*extern "C"*/

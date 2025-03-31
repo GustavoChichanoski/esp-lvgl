@@ -15,9 +15,9 @@ typedef struct {
     StackScreen* stack_screen;
 } ScreenTemperature;
 
-esp_err_t screen_temperature_init(ScreenInterface** self, StackScreen* stack_screen);
-esp_err_t screen_temperature_destroy(ScreenInterface* self);
-esp_err_t screen_temperature_draw(ScreenInterface* self);
-esp_err_t screen_temperature_create(ScreenInterface* screen);
+esp_err_t screenTemperatureInit(ScreenInterface** self, StackScreen* stack_screen);
+esp_err_t screenTemperatureDestroy(ScreenInterface* self);
+esp_err_t screenTemperatureDraw(ScreenInterface* self);
+esp_err_t screenTemperatureCreate(ScreenInterface* screen);
 
 #endif

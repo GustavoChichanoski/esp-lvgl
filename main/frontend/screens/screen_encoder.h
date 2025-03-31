@@ -24,8 +24,8 @@ typedef struct {
 } /*extern "C"*/
 #endif
 
-esp_err_t screen_encoder_init(ScreenInterface** self, StackScreen* stack_screen);
-esp_err_t screen_encoder_draw(ScreenInterface* self);
-esp_err_t screen_encoder_destroy(ScreenInterface* self);
+esp_err_t screenEncoderInit(ScreenInterface** self, StackScreen* stack_screen);
+esp_err_t screenEncoderDraw(ScreenInterface* self);
+esp_err_t screenEncoderDestroy(ScreenInterface* self);
 
 #endif

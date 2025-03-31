@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-void temperature_task(void* args);
+void temperatureTask(void* args);
 
 #ifdef __cplusplus
 } /*extern "C"*/

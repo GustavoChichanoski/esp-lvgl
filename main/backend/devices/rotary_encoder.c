@@ -7,7 +7,7 @@
 // Project includes
 #include "configs/pinout.h"
 
-const char TAG_ENCODER[] = "[ENCODER]";
+const char kTagEncoder[] = "[ENCODER]";
 static Encoder encoder;
 
 /**
@@ -20,7 +20,7 @@ static Encoder encoder;
  * state of the encoder. The user can use this pointer to access the position and
  * direction of the encoder.
  */
-Encoder* get_encoder() { return &encoder; }
+Encoder* encoderGet() { return &encoder; }
 
 /**
  * @brief Increment the position of the encoder by one
@@ -32,11 +32,11 @@ Encoder* get_encoder() { return &encoder; }
  * position is already at its maximum value (0xFF), the function returns
  * 0xFF. Otherwise, the function returns the incremented position.
  */
-static uint8_t increment_encoder(uint8_t position) {
+static uint8_t encoderIncrement(uint8_t position) {
     return (0xFF == position) ? 0xFF : position + 1;
 }
 
-static uint8_t decrement_encoder(uint8_t position) { return (position) ? position - 1 : 0; }
+static uint8_t encoderDecrement(uint8_t position) { return (position) ? position - 1 : 0; }
 
 /**
  * @brief Read the current position of the encoder
@@ -49,22 +49,23 @@ static uint8_t decrement_encoder(uint8_t position) { return (position) ? positio
  * struct.
  *
  */
-void update_encoder_position(void* arg) {
+void encoderUpdatePosition(void* arg) {
     Encoder* encoder = (Encoder*)arg;
     int32_t b_level  = gpio_get_level(ENCODER_B);
     if (b_level) {
         encoder->direction = ENCODER_ROTATE_CLOCKWISE;
-        encoder->position  = increment_encoder(encoder->position);
+        encoder->position  = encoderIncrement(encoder->position);
     } else {
         encoder->direction = ENCODER_ROTATE_ANTI_CLOCKWISE;
-        encoder->position  = decrement_encoder(encoder->position);
+        encoder->position  = encoderDecrement(encoder->position);
     }
     int64_t now        = esp_timer_get_time();
     encoder->velocity  = (uint32_t)((now - encoder->last_time) / 1000);
     encoder->last_time = now;
 }
 
-void encoder_init(void* arg) {
+void encoderInit(void* arg) {
+    (void)arg;
     encoder.position      = 0;
     encoder.last_position = 0;
     encoder.direction     = 0;
@@ -86,5 +87,5 @@ void encoder_init(void* arg) {
                                       .pin_bit_mask = (1ULL << ENCODER_B)};
     ESP_ERROR_CHECK(gpio_config(&encoder_b_config));
     ESP_ERROR_CHECK(gpio_install_isr_service(ESP_INTR_FLAG_HIGH));
-    ESP_ERROR_CHECK(gpio_isr_handler_add(ENCODER_A, update_encoder_position, &encoder));
+    ESP_ERROR_CHECK(gpio_isr_handler_add(ENCODER_A, encoderUpdatePosition, &encoder));
 }

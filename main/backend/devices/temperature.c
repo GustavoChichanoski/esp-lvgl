@@ -11,7 +11,7 @@
 // Project includes
 #include "configs/project_types.h"
 
-const char TAG[] = "[TEMPERATURE]";
+const char kTag[] = "[TEMPERATURE]";
 
 AdcFlags adc_flags = {.flags = 0b1100110000011};
 
@@ -25,10 +25,10 @@ AdcFlags adc_flags = {.flags = 0b1100110000011};
  *
  * @return true if a sensor is found, false otherwise.
  */
-bool ads1115_find(i2c_master_bus_handle_t* i2c, SensorTemperature* sensor,
-                  SemaphoreHandle_t* i2c_bus_mutex) {
+bool ads1115Find(i2c_master_bus_handle_t* i2c, SensorTemperature* sensor,
+                 SemaphoreHandle_t* i2c_bus_mutex) {
     if (NULL == *i2c) {
-        ESP_LOGE(TAG, "I2C not initialized");
+        ESP_LOGE(kTag, "I2C not initialized");
         return false;
     }
 
@@ -50,14 +50,14 @@ bool ads1115_find(i2c_master_bus_handle_t* i2c, SensorTemperature* sensor,
     }
 
     if (0 == sensor->address) {
-        ESP_LOGE(TAG, "No sensor found");
+        ESP_LOGE(kTag, "No sensor found");
         return false;
     }
 
     return true;
 }
 
-bool ads1115_read(i2c_master_dev_handle_t* i2c, uint8_t channel, TemperatureTaskArgs* args) {
+bool ads1115Read(i2c_master_dev_handle_t* i2c, uint8_t channel, TemperatureTaskArgs* args) {
     uint8_t data[2];
     adc_flags.as_bits.mux = channel;
 
@@ -70,14 +70,14 @@ bool ads1115_read(i2c_master_dev_handle_t* i2c, uint8_t channel, TemperatureTask
     return true;
 }
 
-void temperature_task(void* args) {
+void temperatureTask(void* args) {
     TemperatureTaskArgs* task_args = (TemperatureTaskArgs*)args;
-    ESP_LOGI(TAG, "Temperature task started");
+    ESP_LOGI(kTag, "Temperature task started");
 
     i2c_master_dev_handle_t dev_handle = NULL;
 
     while (true) {
-        if (!ads1115_find(task_args->i2c_bus, task_args->sensor, task_args->i2c_bus_mutex)) break;
+        if (!ads1115Find(task_args->i2c_bus, task_args->sensor, task_args->i2c_bus_mutex)) break;
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 
@@ -88,10 +88,10 @@ void temperature_task(void* args) {
                                       .scl_wait_us     = 0};
 
     ESP_ERROR_CHECK(i2c_master_bus_add_device(*task_args->i2c_bus, &dev_config, &dev_handle));
-    ESP_LOGI(TAG, "Temperature task initialized");
+    ESP_LOGI(kTag, "Temperature task initialized");
 
     while (true) {
-        ESP_LOGI(TAG, "Temperature task running");
+        ESP_LOGI(kTag, "Temperature task running");
         vTaskDelay(pdMS_TO_TICKS(1000));  // Wait for 1 second
     }
 }

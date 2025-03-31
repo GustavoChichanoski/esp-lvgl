@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-void task_gui(void* args);
+void taskGui(void* args);
 
 #if __cplusplus
 } /*extern "C"*/
