@@ -38,14 +38,13 @@ void task_gui(void* args) {
 
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
     uint32_t time_next_ms       = 0;
-    uint32_t time_threshold_msg = 1000 / CONFIG_FREERTOS_HZ;
+    uint32_t time_threshold_msg = 100;
 
     for (;;) {
-        
+        ESP_LOGI(TAG, "Next update");
         ESP_ERROR_CHECK(controller_screen_draw(stack_screen));
         time_next_ms = lv_timer_handler();  // LVGL update
-
-        time_next_ms = (time_threshold_msg > time_next_ms) ? time_threshold_msg : time_next_ms;
+        time_next_ms = (time_threshold_msg < time_next_ms) ? time_threshold_msg : time_next_ms;
         vTaskDelay(pdMS_TO_TICKS(time_next_ms));  // Delay 10ms
     }
 }

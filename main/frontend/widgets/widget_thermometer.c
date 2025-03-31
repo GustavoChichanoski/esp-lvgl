@@ -23,8 +23,8 @@ lv_color_t get_thermometer_color(int temp) {
 }
 
 esp_err_t widget_thermometer_set_temperature(WidgetThermometer* widget, int temp) {
-    // lv_bar_set_value(widget->thermometer, temp, LV_ANIM_OFF);
-    // lv_obj_set_style_bg_color(widget->thermometer, get_thermometer_color(temp), LV_PART_INDICATOR);
+    lv_bar_set_value(widget->thermometer, temp, LV_ANIM_OFF);
+    lv_obj_set_style_bg_color(widget->thermometer, get_thermometer_color(temp), LV_PART_INDICATOR);
     return ESP_OK;
 }
 
