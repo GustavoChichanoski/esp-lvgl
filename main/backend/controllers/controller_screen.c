@@ -1,7 +1,7 @@
 #include "./controller_screen.h"
 #include "esp_log.h"
 
-const char* STACK_TAG = "Stack Screen";
+const char* STACK_TAG = "[Stack Screen]";
 
 /**
  * @brief Initialize the stack screen controller.
@@ -107,5 +107,6 @@ esp_err_t controller_screen_draw(StackScreen* stack_screen) {
         ESP_LOGE(STACK_TAG, "No draw function for current screen");
         return ESP_ERR_INVALID_STATE;
     }
+    ESP_LOGI(STACK_TAG, "Drawing current screen");
     return stack_screen->current->draw(stack_screen->current);
 }

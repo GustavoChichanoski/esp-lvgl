@@ -29,7 +29,6 @@
     "clangd.path": "${env:IDF_TOOLS_PATH}/tools/esp-clang/esp-18.1.2_20240912/esp-clang/bin/clangd.exe",
     "clangd.arguments": [
         "-log=verbose",
-        "-pretty",
-        "-format-style=file"
+        "-pretty"
     ]
 }

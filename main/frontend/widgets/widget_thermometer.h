@@ -14,6 +14,7 @@ typedef struct {
 
 esp_err_t widget_thermometer_create(WidgetThermometer** widget, lv_obj_t* parent, int temp);
 esp_err_t widget_thermometer_destroy(WidgetThermometer* widget);
+esp_err_t widget_thermometer_set_temperature(WidgetThermometer* widget, int temp);
 
 #ifdef __cplusplus
 } /*extern "C"*/

@@ -11,10 +11,13 @@
 
 typedef struct {
     lv_obj_t* label;
-    WidgetThermometer *thermometer;
+    WidgetThermometer* thermometer;
     StackScreen* stack_screen;
 } ScreenTemperature;
 
 esp_err_t screen_temperature_init(ScreenInterface** self, StackScreen* stack_screen);
+esp_err_t screen_temperature_destroy(ScreenInterface* self);
+esp_err_t screen_temperature_draw(ScreenInterface* self);
+esp_err_t screen_temperature_create(ScreenInterface* screen);
 
 #endif

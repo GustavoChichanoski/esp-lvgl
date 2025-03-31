@@ -8,7 +8,7 @@
 #include "frontend/widgets/widget_button.h"
 #include "widgets/label/lv_label.h"
 
-const char* TAG_SCREEN_ENCODER = "screen_encoder";
+const char* TAG_SCREEN_ENCODER = "[SCREEN ENCODER]";
 
 esp_err_t screen_encoder_create(ScreenInterface* screen);
 esp_err_t screen_encoder_destroy(ScreenInterface* self);
@@ -20,23 +20,24 @@ esp_err_t screen_encoder_init(ScreenInterface** self, StackScreen* stack_screen)
         ESP_LOGE(TAG_SCREEN_ENCODER, "Failed to allocate memory for screen interface");
         return ESP_ERR_NO_MEM;
     }
+    ScreenEncoder* screen_encoder = (ScreenEncoder*)malloc(sizeof(ScreenEncoder));
+    if (!screen_encoder) {
+        ESP_LOGE(TAG_SCREEN_ENCODER, "Failed to allocate memory for ScreenTemperature");
+        return ESP_ERR_NO_MEM;
+    }
+
     new_screen->create   = screen_encoder_create;
     new_screen->draw     = screen_encoder_draw;
     new_screen->destroy  = screen_encoder_destroy;
     new_screen->previous = (stack_screen->current) ? stack_screen->current : NULL;
     new_screen->next     = NULL;
 
-    ScreenEncoder* screen_encoder = (ScreenEncoder*)malloc(sizeof(ScreenEncoder));
-    screen_encoder->encoder       = NULL;
-    screen_encoder->title         = NULL;
-    screen_encoder->position      = NULL;
-    screen_encoder->stack_screen  = stack_screen;
-    new_screen->context           = screen_encoder;
+    screen_encoder->encoder      = NULL;
+    screen_encoder->title        = NULL;
+    screen_encoder->position     = NULL;
+    screen_encoder->stack_screen = stack_screen;
+    new_screen->context          = screen_encoder;
 
-    if (!screen_encoder) {
-        ESP_LOGE(TAG_SCREEN_ENCODER, "Failed to allocate memory for ScreenTemperature");
-        return ESP_ERR_NO_MEM;
-    }
     esp_err_t error = screen_encoder_create(new_screen);
     if (error) {
         ESP_LOGE(TAG_SCREEN_ENCODER, "Failed to create screen_temperature");
@@ -73,7 +74,7 @@ esp_err_t screen_encoder_create(ScreenInterface* screen) {
     lv_obj_set_style_text_font(self->title, &lv_font_montserrat_14, LV_STATE_DEFAULT);
     lv_obj_align(self->title, LV_ALIGN_TOP_MID, 0, 10);
 
-    esp_err_t error = widget_button_create(&next_button, screen_active, "Back", NULL);
+    esp_err_t error = widget_button_create(&next_button, screen_active, "Back", NULL, 0, 0);
     if (error) {
         screen_encoder_destroy(screen);
         ESP_LOGE(TAG_SCREEN_ENCODER, "Failed to create back button");

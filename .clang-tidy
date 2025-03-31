@@ -1,1 +1,5 @@
 Checks: "clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling"
+Add: modernize*
+Remove: modernize-avoid-c-arrays
+CheckOptions:
+  readability-identifier-naming.VariableCase: SnakeCase

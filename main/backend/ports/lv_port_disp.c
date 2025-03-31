@@ -18,23 +18,25 @@
 /**********************
  *      DEFINES
  *********************/
-#define CONFIG_LCD_HOST       SPI2_HOST
 
-#define BOARD_LCD_MISO        19
-#define BOARD_LCD_MOSI        23
-#define BOARD_LCD_SCK         18
-#define BOARD_LCD_CS          15
-#define BOARD_LCD_RST         4
-#define BOARD_LCD_DC          2
 
-#define CONFIG_LCD_H_RES      240
-#define CONFIG_LCD_V_RES      320
+#define CONFIG_LCD_HOST       (SPI2_HOST)
+
+#define BOARD_LCD_MISO        (19)
+#define BOARD_LCD_MOSI        (23)
+#define BOARD_LCD_SCK         (18)
+#define BOARD_LCD_CS          (15)
+#define BOARD_LCD_RST         (4)
+#define BOARD_LCD_DC          (2)
+
+#define CONFIG_LCD_H_RES      (240)
+#define CONFIG_LCD_V_RES      (320)
 #define CONFIG_LCD_FREQ       (10 * 1000 * 1000)
-#define CONFIG_LCD_CMD_BITS   8
-#define CONFIG_LCD_PARAM_BITS 8
+#define CONFIG_LCD_CMD_BITS   (8)
+#define CONFIG_LCD_PARAM_BITS (8)
 
-#define LVGL_TICK_PERIOD_MS   5
-#define LVGL_DRAW_BUF_LINES   20
+#define LVGL_TICK_PERIOD_MS   (5)
+#define LVGL_DRAW_BUF_LINES   (20)
 
 #define BYTE_PER_PIXEL        (LV_COLOR_FORMAT_GET_SIZE(LV_COLOR_FORMAT_RGB565)) /*will be 2 for RGB565 */
 #define BUFFER_SIZE           (CONFIG_LCD_H_RES * LVGL_DRAW_BUF_LINES)
@@ -46,6 +48,7 @@ esp_lcd_panel_handle_t panel_handle = NULL;
 /**********************
  * STATIC PROTOTYPES
  **********************/
+
 static void disp_init(esp_lcd_panel_io_handle_t* io_handle);
 
 static void disp_flush(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map);
@@ -54,20 +57,49 @@ static void disp_flush(lv_display_t* disp, const lv_area_t* area, uint8_t* px_ma
  * GLOBAL FUNCTIONS
  **********************/
 // Add this at the top of the file
-#define DEBUG_TAG "LVGL_PORT"
+#define DEBUG_TAG "[LVGL PORT]"
 
+/**
+ * @brief Callback to notify LVGL that a flush operation is complete.
+ *
+ * This function is called when a color transfer is done, signaling LVGL
+ * that the display flush operation is complete. It marks the display as
+ * ready for the next rendering operation by calling `lv_display_flush_ready`.
+ *
+ * @param panel_io Handle to the panel IO.
+ * @param edata Event data associated with the panel IO operation.
+ * @param user_ctx User context, expected to be a pointer to the LVGL display.
+ * @return false to indicate no further action is required by the panel IO.
+ */
 static bool lvgl_flush_ready_notify(esp_lcd_panel_io_handle_t panel_io,
                                     esp_lcd_panel_io_event_data_t* edata, void* user_ctx) {
-    lv_display_t* disp = (lv_display_t*)user_ctx;
-    lv_display_flush_ready(disp);
+    lv_display_flush_ready((lv_display_t*)user_ctx);
     return false;
 }
 
+/**
+ * @brief LVGL tick callback function.
+ *
+ * This function is called by the esp_timer callback to increase the LVGL tick
+ * counter. It is used to keep track of time elapsed since the last call to
+ * lv_tick_inc() and is used to schedule LVGL tasks.
+ */
 static void increase_lvgl_tick(void* arg) {
     /* Tell LVGL how many milliseconds has elapsed */
     lv_tick_inc(LVGL_TICK_PERIOD_MS);
 }
 
+/**
+ * @brief Allocate buffers for the display driver.
+ *
+ * This function allocates two buffers in SPIRAM, each of size @ref BUFFER_SIZE
+ * bytes. The buffers are used by the display driver to render the screen.
+ *
+ * @param[in] display Pointer to the LVGL display.
+ *
+ * @note The buffers are allocated with the @ref LV_ATTRIBUTE_MEM_ALIGN attribute
+ *       to ensure that they are aligned to the display's requirements.
+ */
 static void lv_port_allocate_buffer(lv_display_t* display) {
     ESP_LOGI(DEBUG_TAG, "Allocating buffers in SPIRAM...");
     ESP_LOGI(DEBUG_TAG, "Buffer size: %d bytes", BUFFER_SIZE);
@@ -126,10 +158,18 @@ void lv_port_disp_init(void) {
     ESP_ERROR_CHECK(esp_lcd_panel_io_register_event_callbacks(io_handle, &cbs, disp));
 }
 
-/**********************
- *   STATIC FUNCTIONS
- **********************/
-/*Initialize your display and the required peripherals.*/
+/**
+ * @brief Initialize the display.
+ *
+ * This function initializes the SPI bus and LCD display device.
+ *
+ * @param io_handle[inout] Pointer to the SPI bus handle.
+ *
+ * @return esp_err_t ESP_OK on success or an appropriate error code on failure.
+ *
+ * @note This function is called by lv_port_disp_init and should not be called
+ *       directly. It is intended to be used internally by the LVGL port.
+ */
 static void disp_init(esp_lcd_panel_io_handle_t* io_handle) {
     spi_bus_config_t bus_cfg = {.sclk_io_num     = BOARD_LCD_SCK,
                                 .mosi_io_num     = BOARD_LCD_MOSI,
@@ -140,34 +180,38 @@ static void disp_init(esp_lcd_panel_io_handle_t* io_handle) {
     ESP_ERROR_CHECK(
         spi_bus_initialize((spi_host_device_t)CONFIG_LCD_HOST, &bus_cfg, SPI_DMA_CH_AUTO));
 
-    esp_lcd_panel_io_spi_config_t io_cfg = {
-        .dc_gpio_num       = BOARD_LCD_DC,
-        .cs_gpio_num       = BOARD_LCD_CS,
-        .pclk_hz           = CONFIG_LCD_FREQ,
-        .lcd_cmd_bits      = CONFIG_LCD_CMD_BITS,
-        .lcd_param_bits    = CONFIG_LCD_PARAM_BITS,
-        .spi_mode          = 0,
-        .trans_queue_depth = 10,
-    };
+    esp_lcd_panel_io_spi_config_t io_cfg = {.dc_gpio_num       = BOARD_LCD_DC,
+                                            .cs_gpio_num       = BOARD_LCD_CS,
+                                            .pclk_hz           = CONFIG_LCD_FREQ,
+                                            .lcd_cmd_bits      = CONFIG_LCD_CMD_BITS,
+                                            .lcd_param_bits    = CONFIG_LCD_PARAM_BITS,
+                                            .spi_mode          = 0,
+                                            .trans_queue_depth = 10};
     ESP_ERROR_CHECK(
         esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)CONFIG_LCD_HOST, &io_cfg, io_handle));
 
-    esp_lcd_panel_dev_config_t panel_cfg = {
-        .reset_gpio_num = BOARD_LCD_RST,
-        .rgb_ele_order  = LCD_RGB_ELEMENT_ORDER_RGB,
-        .bits_per_pixel = 16,
-        .data_endian    = LCD_RGB_DATA_ENDIAN_LITTLE,
-    };
-    ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle[0], &panel_cfg, &panel_handle));
+    esp_lcd_panel_dev_config_t panel_cfg = {.reset_gpio_num = BOARD_LCD_RST,
+                                            .rgb_ele_order  = LCD_RGB_ELEMENT_ORDER_RGB,
+                                            .bits_per_pixel = 16,
+                                            .data_endian    = LCD_RGB_DATA_ENDIAN_LITTLE};
+    ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(*io_handle, &panel_cfg, &panel_handle));
 
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
-    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
+    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, false));
     ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, false));
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, false, false));
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, false));
 }
 
+/**
+ * @brief Callback to update the display rotation.
+ *
+ * @param[in] disp Pointer to the initialized display.
+ *
+ * This callback is called when the display rotation changes.
+ * It updates the display rotation of the LCD panel.
+ */
 static void lvgl_port_update_callback(lv_display_t* disp) {
     // esp_lcd_panel_handle_t panel_handle = lv_display_get_user_data(disp);
     // lv_display_rotation_t rotation      = lv_display_get_rotation(disp);
@@ -196,10 +240,12 @@ static void lvgl_port_update_callback(lv_display_t* disp) {
     // }
 }
 
-/*
- *Flush the content of the internal buffer the specific area on the display.
- *`px_map` contains the rendered image as raw pixel map
- *'lv_display_flush_ready()' has to be called when it's finished.
+/**
+ * @brief Flush the display.
+ *
+ * @param[in] display Pointer to the initialized display.
+ * @param[in] area The area that should be updated.
+ * @param[in] px_map Pixel map to be rendered.
  */
 static void disp_flush(lv_display_t* display, const lv_area_t* area, uint8_t* px_map) {
     lvgl_port_update_callback(display);

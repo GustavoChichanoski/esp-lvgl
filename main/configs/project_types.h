@@ -7,7 +7,8 @@
 #include "driver/i2c_types.h"
 
 /// FreeRTOS
-#include "freertos/FreeRTOS.h"
+#include "freertos/FreeRTOS.h" // clang-tyde: off
+#include "freertos/idf_additions.h"
 #include "freertos/semphr.h"
 
 typedef struct {

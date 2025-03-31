@@ -1,11 +1,13 @@
-#include "./rotary_encoder.h"
+#include "backend/devices/rotary_encoder.h"
 
+// Esp-IDF includes
 #include "driver/gpio.h"
 #include "esp_timer.h"
 
+// Project includes
 #include "configs/pinout.h"
 
-const char* TAG_ENCODER = "[ENCODER]";
+const char TAG_ENCODER[] = "[ENCODER]";
 static Encoder encoder;
 
 /**
@@ -20,6 +22,16 @@ static Encoder encoder;
  */
 Encoder* get_encoder() { return &encoder; }
 
+/**
+ * @brief Increment the position of the encoder by one
+ *
+ * @param position The current position of the encoder
+ * @return The new position of the encoder
+ *
+ * This function increments the position of the encoder by one. If the
+ * position is already at its maximum value (0xFF), the function returns
+ * 0xFF. Otherwise, the function returns the incremented position.
+ */
 static uint8_t increment_encoder(uint8_t position) {
     return (0xFF == position) ? 0xFF : position + 1;
 }

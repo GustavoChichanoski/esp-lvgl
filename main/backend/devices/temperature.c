@@ -1,24 +1,19 @@
 #include "./temperature.h"
-#include "configs/project_types.h"
+
+// C Standard includes
+#include "stdbool.h"
+
+// Esp-IDF includes
 #include "driver/i2c_master.h"
 #include "esp_log.h"
 #include "hal/i2c_types.h"
 
-const char* TAG = "TEMPERATURE";
+// Project includes
+#include "configs/project_types.h"
 
-AdcFlags adc_flags = {
-    .as_bits =
-        {
-            .os        = 1,
-            .mux       = 0b100,
-            .mode      = 1,
-            .dr        = 0b100,
-            .comp_mode = 0,
-            .comp_pol  = 0,
-            .comp_lat  = 0,
-            .comp_que  = 0b11,
-        },
-};
+const char TAG[] = "[TEMPERATURE]";
+
+AdcFlags adc_flags = {.flags = 0b1100110000011};
 
 /**
  * @brief Scans the I2C bus for a connected ADS1115 temperature sensor.
@@ -45,7 +40,7 @@ bool ads1115_find(i2c_master_bus_handle_t* i2c, SensorTemperature* sensor,
             addr--;
             continue;
         }
-        if (ESP_OK != i2c_master_probe(*i2c, addr, 10)) {
+        if (i2c_master_probe(*i2c, addr, 10)) {
             xSemaphoreGive(*i2c_bus_mutex);
             continue;
         }
@@ -64,7 +59,7 @@ bool ads1115_find(i2c_master_bus_handle_t* i2c, SensorTemperature* sensor,
 
 bool ads1115_read(i2c_master_dev_handle_t* i2c, uint8_t channel, TemperatureTaskArgs* args) {
     uint8_t data[2];
-    adc_flags.as_bits.mux = channel << 2;
+    adc_flags.as_bits.mux = channel;
 
     while (pdFALSE == xSemaphoreTake((*args->i2c_bus_mutex), pdMS_TO_TICKS(10))) {}
     i2c_master_transmit(*i2c, (uint8_t*)&adc_flags.flags, 2, 0);
@@ -86,21 +81,16 @@ void temperature_task(void* args) {
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 
-    i2c_device_config_t dev_config = {
-        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
-        .device_address  = task_args->sensor->address,
-        .scl_speed_hz    = ADS1115_SPEED,
-        .flags =
-            {
-                .disable_ack_check = false,
-            },
-        .scl_wait_us = 0,
-    };
+    i2c_device_config_t dev_config = {.dev_addr_length = I2C_ADDR_BIT_LEN_7,
+                                      .device_address  = task_args->sensor->address,
+                                      .scl_speed_hz    = ADS1115_SPEED,
+                                      .flags           = {.disable_ack_check = false},
+                                      .scl_wait_us     = 0};
 
     ESP_ERROR_CHECK(i2c_master_bus_add_device(*task_args->i2c_bus, &dev_config, &dev_handle));
     ESP_LOGI(TAG, "Temperature task initialized");
 
-    while (1) {
+    while (true) {
         ESP_LOGI(TAG, "Temperature task running");
         vTaskDelay(pdMS_TO_TICKS(1000));  // Wait for 1 second
     }

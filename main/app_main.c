@@ -1,7 +1,5 @@
 #include <stdio.h>
 
-#include "configs/pinout.h"
-#include "driver/i2c_master.h"
 #include "esp_log.h"
 
 #include "freertos/idf_additions.h"
@@ -9,14 +7,13 @@
 #include "freertos/task.h"
 
 #include "./backend/tasks/task_gui.h"
-#include "soc/clk_tree_defs.h"
 
 // GUI Task Settings
 #define GUI_STACK_SIZE (10 * 1024)
 #define ADS_STEP_UV    (125)
 #define ADS_DATA_SIZE  (2)
 
-const char* TAG_MAIN = "MAIN";
+const char TAG_MAIN[] = "[MAIN]";
 
 // Main Function (app_main)
 void app_main(void) {
