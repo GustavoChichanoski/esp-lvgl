@@ -62,6 +62,11 @@ esp_err_t screenTemperatureInit(ScreenInterface** self, StackScreen* stack_scree
     return ESP_OK;
 }
 
+void screenTemperatureNextButtonCallback(WidgetButton* button) {
+    (void)button;
+    ESP_LOGI(tag_screen_temperature, "Button clicked");
+}
+
 /**
  * @brief Create the screen_temperature screen.
  *
@@ -89,14 +94,10 @@ esp_err_t screenTemperatureCreate(ScreenInterface* screen) {
         return ESP_ERR_NO_MEM;
     }
 
-    lv_label_set_text(self->label, "Hello world");
-    lv_obj_set_style_text_color(self->label, lv_color_hex(0xffffff), LV_PART_MAIN);
-    lv_obj_align(self->label, LV_ALIGN_CENTER, 0, 0);
-
-    Point2D offset = {10, 10};
+    self->next_button = NULL;
 
     // Create the thermometer and check for success
-    widgetThermometerCreate(&self->thermometer, screen_active, 99, offset);
+    widgetThermometerCreate(&self->thermometer, screen_active, 99, (Point2D){.x = 10, .y = -10});
     if (!self->thermometer) {
         ESP_LOGE(tag_screen_temperature, "Failed to create thermometer");
         return ESP_ERR_NO_MEM;
@@ -139,7 +140,7 @@ esp_err_t screenTemperatureDraw(ScreenInterface* self) {
 esp_err_t screenTemperatureDestroy(ScreenInterface* self) {
     ScreenTemperature* screen_temperature = self->context;
     if (!screen_temperature) {
-        log_error_lv_del(tag_screen_temperature, "ScreenTemperature");
+        logErrorLvDel(tag_screen_temperature, "ScreenTemperature");
         return ESP_ERR_INVALID_STATE;
     }
     if (!screen_temperature->label) lv_obj_delete(screen_temperature->label);

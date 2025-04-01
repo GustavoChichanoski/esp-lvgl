@@ -10,8 +10,8 @@
 #include "misc/lv_types.h"
 #include "widgets/bar/lv_bar.h"
 
-#define THERMOMETER_WIDTH  200
-#define THERMOMETER_HEIGHT 20
+#define THERMOMETER_WIDTH  20
+#define THERMOMETER_HEIGHT 200
 #define TEMP_MIN           0
 #define TEMP_MAX           100
 
@@ -48,8 +48,7 @@ esp_err_t widgetThermometerSetTemperature(WidgetThermometer* widget, int temp) {
     return ESP_OK;
 }
 
-void widgetThermometerSetBorder(WidgetThermometer* widget, lv_color_t color) {
-    lv_obj_t* thermometer = widget->thermometer;
+void widgetThermometerSetBorder(lv_obj_t* thermometer, lv_color_t color) {
     lv_obj_set_style_border_color(thermometer, color, LV_PART_MAIN);       // Gray color
     lv_obj_set_style_border_width(thermometer, 1, LV_PART_MAIN);           // 1 pixel width
     lv_obj_set_style_border_opa(thermometer, LV_OPA_COVER, LV_PART_MAIN);  // Full opacity
@@ -60,8 +59,9 @@ esp_err_t widgetThermometerCreate(WidgetThermometer** widget, lv_obj_t* parent, 
                                   Point2D offset) {
     /* Create the bar widget */
     lv_obj_t* thermometer = lv_bar_create(parent);
+    lv_bar_set_orientation(thermometer, LV_BAR_ORIENTATION_VERTICAL);
     lv_obj_set_size(thermometer, THERMOMETER_WIDTH, THERMOMETER_HEIGHT);
-    lv_obj_align(thermometer, LV_ALIGN_TOP_LEFT, offset.x, offset.y);
+    lv_obj_align(thermometer, LV_ALIGN_BOTTOM_LEFT, offset.x, offset.y);
     ESP_LOGI(tag_widget_thermometer, "Created thermometer");
 
     /* Set the range for temperature values */
@@ -77,11 +77,11 @@ esp_err_t widgetThermometerCreate(WidgetThermometer** widget, lv_obj_t* parent, 
     widgetThermometerSetShadow(thermometer, lv_color_hex(0x000000));
 
     /* Set the border properties */
-    widgetThermometerSetBorder(*widget, lv_color_hex(0x808080));
+    widgetThermometerSetBorder(thermometer, lv_color_hex(0x808080));
 
     /* Set the current temperature */
     lv_bar_set_value(thermometer, temp, LV_ANIM_ON);
-    (*widget)              = malloc(sizeof(WidgetThermometer));
+    (*widget)              = (WidgetThermometer*)malloc(sizeof(WidgetThermometer));
     (*widget)->thermometer = thermometer;
     ESP_LOGI(tag_widget_thermometer, "Set thermometer value");
     return ESP_OK;

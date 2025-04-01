@@ -7,18 +7,19 @@
 #include "driver/i2c_types.h"
 
 /// FreeRTOS
-#include "freertos/FreeRTOS.h" // clang-tyde: off
+#include "freertos/FreeRTOS.h"
 #include "freertos/idf_additions.h"
 #include "freertos/semphr.h"
 
 typedef struct {
-    uint8_t position;
-    uint8_t last_position;
-    uint8_t direction;
-    uint8_t last_a_level;
-    uint8_t last_b_level;
-    uint64_t last_time;
+    uint8_t position      : 1;
+    uint8_t last_position : 1;
+    uint8_t direction     : 1;
+    uint8_t last_a_level  : 1;
+    uint8_t last_b_level  : 1;
+    uint8_t button        : 3;
     uint32_t velocity;
+    uint64_t last_time;
 } Encoder;
 
 typedef union {

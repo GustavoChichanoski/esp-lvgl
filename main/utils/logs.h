@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-void log_error_lv_del(const char* tag, char* name);
+void logErrorLvDel(const char* tag, char* name);
 
 #ifdef __cplusplus
 } /*extern "C"*/

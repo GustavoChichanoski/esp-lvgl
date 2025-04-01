@@ -14,7 +14,7 @@ typedef struct {
     StackScreen* stack_screen;
 } ScreenSimple;
 
-esp_err_t screen_simple_init(ScreenInterface** self, StackScreen* stack_screen);
+esp_err_t screenSimpleInit(ScreenInterface** self, StackScreen* stack_screen);
 
 #ifdef __cplusplus
 } /*extern "C"*/

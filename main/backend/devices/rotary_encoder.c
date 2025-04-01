@@ -1,11 +1,14 @@
-#include "backend/devices/rotary_encoder.h"
-
 // Esp-IDF includes
 #include "driver/gpio.h"
+#include "esp_err.h"
 #include "esp_timer.h"
 
 // Project includes
+#include "backend/devices/rotary_encoder.h"
 #include "configs/pinout.h"
+#include "configs/project_types.h"
+#include "utils/utils_macros.h"
+
 
 const char kTagEncoder[] = "[ENCODER]";
 static Encoder encoder;
@@ -64,28 +67,48 @@ void encoderUpdatePosition(void* arg) {
     encoder->last_time = now;
 }
 
+/**
+ * @brief Initialize the rotary encoder
+ *
+ * This function initializes the rotary encoder by setting all the initial
+ * values of the Encoder struct to 0. It also sets up the interrupts for the
+ * encoder pins.
+ *
+ * @param arg Not used
+ */
 void encoderInit(void* arg) {
-    (void)arg;
-    encoder.position      = 0;
-    encoder.last_position = 0;
-    encoder.direction     = 0;
-    encoder.last_a_level  = 0;
-    encoder.last_b_level  = 0;
-    encoder.last_time     = 0;
-    encoder.velocity      = 0;
+    Encoder* encoder       = (Encoder*)arg;
+    encoder->position      = 0;
+    encoder->last_position = 0;
+    encoder->direction     = 0;
+    encoder->last_a_level  = 0;
+    encoder->last_b_level  = 0;
+    encoder->last_time     = 0;
+    encoder->velocity      = 0;
 
     gpio_config_t encoder_config = {.pull_down_en = GPIO_PULLDOWN_DISABLE,
                                     .pull_up_en   = GPIO_PULLUP_ENABLE,
                                     .mode         = GPIO_MODE_INPUT,
                                     .intr_type    = GPIO_INTR_POSEDGE,
-                                    .pin_bit_mask = (1ULL << ENCODER_A)};
+                                    .pin_bit_mask = PIN_SELECT(ENCODER_A)};
     ESP_ERROR_CHECK(gpio_config(&encoder_config));
+
+    gpio_config_t button = {.pull_down_en = GPIO_PULLDOWN_DISABLE,
+                            .pull_up_en   = GPIO_PULLUP_ENABLE,
+                            .mode         = GPIO_MODE_INPUT,
+                            .intr_type    = GPIO_INTR_DISABLE,
+                            .pin_bit_mask = PIN_SELECT(ENCODER_BUTTON)};
+    ESP_ERROR_CHECK(gpio_config(&button));
+
     gpio_config_t encoder_b_config = {.pull_down_en = GPIO_PULLDOWN_DISABLE,
                                       .pull_up_en   = GPIO_PULLUP_ENABLE,
                                       .mode         = GPIO_MODE_INPUT,
                                       .intr_type    = GPIO_INTR_DISABLE,
-                                      .pin_bit_mask = (1ULL << ENCODER_B)};
+                                      .pin_bit_mask = PIN_SELECT(ENCODER_B)};
     ESP_ERROR_CHECK(gpio_config(&encoder_b_config));
+
     ESP_ERROR_CHECK(gpio_install_isr_service(ESP_INTR_FLAG_HIGH));
     ESP_ERROR_CHECK(gpio_isr_handler_add(ENCODER_A, encoderUpdatePosition, &encoder));
 }
+
+void encoderTask(void* arg) { (void)arg; }
