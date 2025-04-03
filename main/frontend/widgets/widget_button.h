@@ -18,7 +18,7 @@ typedef struct WidgetButton {
 } WidgetButton;
 
 esp_err_t widgetButtonCreate(WidgetButton** widget, lv_obj_t* parent, char* text,
-                             button_clicked_cb on_click, Point2D offset);
+                             button_clicked_cb on_click, Point2D position);
 esp_err_t widgetButtonDestroy(WidgetButton* widget);
 
 #ifdef __cplusplus
