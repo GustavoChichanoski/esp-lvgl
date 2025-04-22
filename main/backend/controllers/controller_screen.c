@@ -47,7 +47,7 @@ esp_err_t controllerScreenAdd(StackScreen* stack_screen, ScreenInterface* screen
         ESP_LOGE(stack_tag, "Invalid screen");
         return ESP_ERR_INVALID_ARG;
     }
-    if (stack_screen->head != NULL) {
+    if (NULL != stack_screen->head) {
         screen->previous = stack_screen->current;
     } else {
         stack_screen->head = screen;
@@ -72,7 +72,7 @@ esp_err_t controllerScreenAdd(StackScreen* stack_screen, ScreenInterface* screen
  * screen exists.
  */
 esp_err_t controllerScreenPop(StackScreen* stack_screen, ScreenInterface* screen) {
-    if (stack_screen->current == NULL || stack_screen->current->previous == NULL ||
+    if (NULL == stack_screen->current || NULL == stack_screen->current->previous ||
         stack_screen->head == stack_screen->current) {
         ESP_LOGE(stack_tag, "No previous screen");
         return ESP_ERR_NOT_FOUND;
@@ -99,14 +99,13 @@ esp_err_t controllerScreenPop(StackScreen* stack_screen, ScreenInterface* screen
  * function is not set.
  */
 esp_err_t controllerScreenDraw(StackScreen* stack_screen) {
-    if (stack_screen->current == NULL) {
+    if (NULL == stack_screen->current) {
         ESP_LOGE(stack_tag, "No current screen to draw");
         return ESP_ERR_NOT_FOUND;
     }
-    if (stack_screen->current->draw == NULL) {
+    if (NULL == stack_screen->current->draw) {
         ESP_LOGE(stack_tag, "No draw function for current screen");
         return ESP_ERR_INVALID_STATE;
     }
-    ESP_LOGI(stack_tag, "Drawing current screen");
     return stack_screen->current->draw(stack_screen->current);
 }

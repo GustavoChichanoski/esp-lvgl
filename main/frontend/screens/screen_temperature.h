@@ -6,6 +6,7 @@
 
 #include "frontend/widgets/widget_button.h"
 #include "frontend/widgets/widget_thermometer.h"
+#include "frontend/widgets/widget_chart.h"
 #include "misc/lv_types.h"
 
 #include "./screen.h"
@@ -14,6 +15,7 @@ typedef struct {
     lv_obj_t* label;
     WidgetThermometer* thermometer;
     WidgetButton* next_button;
+    WidgetChart* chart;
     StackScreen* stack_screen;
 } ScreenTemperature;
 

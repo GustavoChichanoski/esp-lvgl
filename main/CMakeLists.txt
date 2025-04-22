@@ -11,6 +11,7 @@ idf_component_register(
     "frontend/screens/screen_simple.c"
     "frontend/widgets/widget_button.c"
     "frontend/widgets/widget_thermometer.c"
+    "frontend/widgets/widget_chart.c"
     "utils/logs.c"
     REQUIRES lvgl
     PRIV_REQUIRES esp_driver_spi esp_lcd

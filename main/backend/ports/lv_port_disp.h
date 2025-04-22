@@ -24,6 +24,6 @@ extern esp_lcd_panel_handle_t panel_handle;
 * @note This function should not be called directly. It is intended to be used
 *       internally by the LVGL port.
 */
-void lv_port_disp_init(void);
+void lvPortDispInit(void);
 
 #endif /*LV_PORT_DISP_H*/

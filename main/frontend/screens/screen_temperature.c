@@ -1,11 +1,13 @@
 #include "./screen_temperature.h"
 #include "backend/controllers/controller_screen.h"
+#include "backend/devices/rotary_encoder.h"
 #include "configs/project_types.h"
 #include "core/lv_obj.h"
 #include "display/lv_display.h"
 #include "esp_log.h"
+#include "freertos/idf_additions.h"
+#include "freertos/projdefs.h"
 #include "frontend/widgets/widget_thermometer.h"
-#include "misc/lv_area.h"
 #include "utils/logs.h"
 #include "widgets/label/lv_label.h"
 
@@ -95,11 +97,19 @@ esp_err_t screenTemperatureCreate(ScreenInterface* screen) {
     }
 
     self->next_button = NULL;
+    Point2D size      = (Point2D){.x = 20, .y = 200};
+    Point2D offset    = (Point2D){.x = 20, .y = -20};
 
     // Create the thermometer and check for success
-    widgetThermometerCreate(&self->thermometer, screen_active, 99, (Point2D){.x = 10, .y = -10});
+    self->thermometer = widgetThermometerCreate(screen_active, 99, size, offset);
     if (!self->thermometer) {
         ESP_LOGE(tag_screen_temperature, "Failed to create thermometer");
+        return ESP_ERR_NO_MEM;
+    }
+
+    self->chart = widgetChartCreate(screen_active, (Point2D){.x = 180, .y = 280}, (Point2D){.x = 50, .y = 20});
+    if (!self->chart) {
+        ESP_LOGE(tag_screen_temperature, "Failed to create chart");
         return ESP_ERR_NO_MEM;
     }
 
@@ -121,8 +131,15 @@ esp_err_t screenTemperatureCreate(ScreenInterface* screen) {
 esp_err_t screenTemperatureDraw(ScreenInterface* self) {
     ScreenTemperature* screen_temperature = self->context;
     if (!screen_temperature) { return ESP_ERR_INVALID_STATE; }
-    temperature = (temperature + 1) % 101;
-    widgetThermometerSetTemperature(screen_temperature->thermometer, temperature);
+
+    Encoder* encoder   = encoderGet();
+    EncoderFlags flags = {0, 0, 0, 0, 0, 0};
+
+    if (pdFALSE == xQueueReceive(encoder->on_change_position, &flags, 0)) return ESP_OK;
+
+    ESP_LOGI(tag_screen_temperature, "Temperature: %d", flags.position);
+    widgetThermometerSetTemperature(screen_temperature->thermometer, flags.position);
+    widgetChartAddPoint(screen_temperature->chart, (int32_t)flags.position);
     return ESP_OK;
 }
 
@@ -145,6 +162,7 @@ esp_err_t screenTemperatureDestroy(ScreenInterface* self) {
     }
     if (!screen_temperature->label) lv_obj_delete(screen_temperature->label);
     if (!screen_temperature->thermometer) widgetThermometerDestroy(screen_temperature->thermometer);
+    if (!screen_temperature->chart) widgetChartDestroy(screen_temperature->chart);
     free(screen_temperature);
     return ESP_OK;
 }

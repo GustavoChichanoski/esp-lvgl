@@ -12,14 +12,22 @@
 #include "freertos/semphr.h"
 
 typedef struct {
-    uint8_t position      : 1;
-    uint8_t last_position : 1;
-    uint8_t direction     : 1;
-    uint8_t last_a_level  : 1;
-    uint8_t last_b_level  : 1;
-    uint8_t button        : 3;
-    uint32_t velocity;
+    uint32_t direction    : 1;
+    uint32_t last_a_level : 1;
+    uint32_t last_b_level : 1;
+    uint32_t button       : 5;
+    uint32_t position     : 8;
+    uint32_t velocity     : 16;
+} EncoderFlags;
+
+typedef enum { kNone = 0, kPressed = 1, kReleased = 2, kLongPressed = 3 } ButtonEvent;
+
+typedef void (*encoder_event_cb)(EncoderFlags event);
+
+typedef struct {
+    EncoderFlags flags;
     uint64_t last_time;
+    QueueHandle_t on_change_position;
 } Encoder;
 
 typedef union {

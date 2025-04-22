@@ -15,7 +15,9 @@ CompileFlags:
       -IC:/Espressif/frameworks/esp-idf-v5.4/components/esp_rom/include,
       -IC:/Espressif/frameworks/esp-idf-v5.4/components/esp_common/include,
     ]
-  Remove: [-m*, -f*]
+  Remove:
+    - -m*
+    - -f*
   Compiler: C:/Espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/xtensa-esp32-elf-gcc.exe
   CompilationDatabase: build
 

@@ -15,18 +15,20 @@
 #include "hal/spi_types.h"
 #include "misc/lv_types.h"
 
-/**********************
+#include "driver/gpio.h"
+
+/**********************s
  *      DEFINES
  *********************/
 
-#define CONFIG_LCD_HOST       (SPI2_HOST)
+#define CONFIG_LCD_HOST       ((spi_host_device_t)SPI2_HOST)
 
-#define BOARD_LCD_MISO        (19)
-#define BOARD_LCD_MOSI        (23)
-#define BOARD_LCD_SCK         (18)
-#define BOARD_LCD_CS          (15)
-#define BOARD_LCD_RST         (4)
-#define BOARD_LCD_DC          (2)
+#define BOARD_LCD_MISO        ((gpio_num_t)GPIO_NUM_19)
+#define BOARD_LCD_MOSI        ((gpio_num_t)GPIO_NUM_23)
+#define BOARD_LCD_SCK         ((gpio_num_t)GPIO_NUM_18)
+#define BOARD_LCD_CS          ((gpio_num_t)GPIO_NUM_15)
+#define BOARD_LCD_RST         ((gpio_num_t)GPIO_NUM_4)
+#define BOARD_LCD_DC          ((gpio_num_t)GPIO_NUM_2)
 
 #define CONFIG_LCD_H_RES      (240)
 #define CONFIG_LCD_V_RES      (320)
@@ -123,7 +125,7 @@ static void lvPortAllocateBuffer(lv_display_t* display) {
     lv_display_set_buffers(display, buf1, buf2, draw_buffer_sz, LV_DISPLAY_RENDER_MODE_PARTIAL);
 }
 
-void lv_port_disp_init(void) {
+void lvPortDispInit(void) {
     esp_lcd_panel_io_handle_t io_handle = NULL;
     ESP_LOGI(DEBUG_TAG, "Initializing display...");
     dispInit(&io_handle);

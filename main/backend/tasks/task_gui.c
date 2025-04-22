@@ -27,7 +27,7 @@ void taskGui(void* args) {
     ESP_LOGI(tag, "Initializing LVGL...");
     lv_init();
     ESP_LOGI(tag, "LVGL initialized");
-    lv_port_disp_init();
+    lvPortDispInit();
     ESP_LOGI(tag, "Display port initialized");
 
     ESP_LOGI(tag, "Creating UI...");
@@ -39,10 +39,9 @@ void taskGui(void* args) {
 
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
     uint32_t time_next_ms       = 0;
-    uint32_t time_threshold_msg = 100;
+    uint32_t time_threshold_msg = 10;
 
     for (;;) {
-        ESP_LOGI(tag, "Next update");
         ESP_ERROR_CHECK(controllerScreenDraw(stack_screen));
         time_next_ms = lv_timer_handler();  // LVGL update
         time_next_ms = (time_threshold_msg < time_next_ms) ? time_threshold_msg : time_next_ms;

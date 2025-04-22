@@ -1,11 +1,14 @@
 #include <stdlib.h>
 
 #include "./screen_encoder.h"
+#include "backend/devices/rotary_encoder.h"
 #include "configs/project_types.h"
 #include "core/lv_obj_tree.h"
 #include "display/lv_display.h"
 #include "esp_err.h"
 #include "esp_log.h"
+#include "freertos/idf_additions.h"
+#include "freertos/projdefs.h"
 #include "frontend/widgets/widget_button.h"
 #include "screen.h"
 #include "widgets/label/lv_label.h"
@@ -32,9 +35,9 @@ esp_err_t screenEncoderInit(ScreenInterface** self, StackScreen* stack_screen) {
     new_screen->previous = (stack_screen->current) ? stack_screen->current : NULL;
     new_screen->next     = NULL;
 
-    screen_encoder->encoder      = NULL;
     screen_encoder->title        = NULL;
     screen_encoder->position     = NULL;
+    screen_encoder->encoder      = encoderGet();
     screen_encoder->stack_screen = stack_screen;
     new_screen->context          = screen_encoder;
 
@@ -112,6 +115,11 @@ esp_err_t screenEncoderDraw(ScreenInterface* self) {
     if (!screen_encoder) {
         ESP_LOGE(tag_screen_encoder, "ScreenEncoder is NULL during draw");
         return ESP_ERR_INVALID_STATE;
+    }
+
+    EncoderFlags encoder_flags;
+    if (pdFALSE == xQueueReceive(screen_encoder->encoder->on_change_position, &encoder_flags, 0)) {
+        return ESP_OK;
     }
     return ESP_OK;
 }

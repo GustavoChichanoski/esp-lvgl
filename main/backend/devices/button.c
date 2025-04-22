@@ -1,5 +1,6 @@
 // Standard includes
 #include <stdbool.h>
+#include <stdint.h>
 
 // Esp-IDF includes
 #include "driver/gpio.h"
@@ -86,7 +87,7 @@ esp_err_t buttonRemoveListener(Button* button, button_event_cb event_cb) {
  * @return esp_err_t ESP_OK on success or an appropriate error code on failure.
  */
 esp_err_t buttonNotify(Button* button, ButtonEvent event) {
-    for (int listener = 0; listener < button->listeners; listener++) {
+    for (uint8_t listener = 0; listener < button->listeners; listener++) {
         if (button->on_event[listener] == NULL) continue;
         button->on_event[listener](event);
     }
