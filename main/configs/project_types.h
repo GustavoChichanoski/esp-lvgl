@@ -8,16 +8,26 @@
 
 /// FreeRTOS
 #include "freertos/FreeRTOS.h"
+#include "freertos/idf_additions.h"
 #include "freertos/semphr.h"
 
 typedef struct {
-    uint8_t position;
-    uint8_t last_position;
-    uint8_t direction;
-    uint8_t last_a_level;
-    uint8_t last_b_level;
+    uint32_t direction    : 1;
+    uint32_t last_a_level : 1;
+    uint32_t last_b_level : 1;
+    uint32_t button       : 5;
+    uint32_t position     : 8;
+    uint32_t velocity     : 16;
+} EncoderFlags;
+
+typedef enum { kNone = 0, kPressed = 1, kReleased = 2, kLongPressed = 3 } ButtonEvent;
+
+typedef void (*encoder_event_cb)(EncoderFlags event);
+
+typedef struct {
+    EncoderFlags flags;
     uint64_t last_time;
-    uint32_t velocity;
+    QueueHandle_t on_change_position;
 } Encoder;
 
 typedef union {
@@ -36,7 +46,7 @@ typedef union {
 } AdcFlags;
 
 typedef struct {
-    float temperature;
+    uint16_t temperature;
     uint8_t address;
 } SensorTemperature;
 
@@ -50,5 +60,10 @@ typedef struct {
     i2c_master_bus_handle_t* i2c_bus;
     SemaphoreHandle_t* i2c_bus_mutex;
 } TemperatureTaskArgs;
+
+typedef struct {
+    int16_t x;
+    int16_t y;
+} Point2D;
 
 #endif

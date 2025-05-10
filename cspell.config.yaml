@@ -1,12 +1,13 @@
 version: "0.2"
 import:
   - "@cspell/dict-pt-br/cspell-ext.json"
-language: en
+language: en, pt-br
 ignorePaths:
   - .pylintrc
   - .gitignore
   - .gitattributes
   - cspell.config.yaml
+  - .clang-tidy
 dictionaries:
   - en_us
   - en-gb
@@ -16,10 +17,16 @@ dictionaries:
   - aws
   - softwareTerms
 words:
+  - gpio
   - LOGI
+  - lvgl
+  - meupc
   - mipi
+  - mosi
   - MOSI
   - pclk
+  - picolibc
+  - POSEDGE
   - psram
   - quadhd
   - quadwp

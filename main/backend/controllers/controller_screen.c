@@ -1,7 +1,7 @@
 #include "./controller_screen.h"
 #include "esp_log.h"
 
-const char* STACK_TAG = "Stack Screen";
+const char* stack_tag = "[Stack Screen]";
 
 /**
  * @brief Initialize the stack screen controller.
@@ -15,15 +15,15 @@ const char* STACK_TAG = "Stack Screen";
  * @return esp_err_t ESP_OK on success or an appropriate error code on failure.
  *                   ESP_ERR_NO_MEM if memory allocation failed.
  */
-esp_err_t controller_screen_init(StackScreen** stack_screen) {
+esp_err_t controllerScreenInit(StackScreen** stack_screen) {
     (*stack_screen) = calloc(1, sizeof(StackScreen));
     if (!(*stack_screen)) {
-        ESP_LOGE(STACK_TAG, "Failed to allocate memory for stack_screen");
+        ESP_LOGE(stack_tag, "Failed to allocate memory for stack_screen");
         return ESP_ERR_NO_MEM;
     }
     (*stack_screen)->current = NULL;
     (*stack_screen)->head    = NULL;
-    ESP_LOGI(STACK_TAG, "Stack Screen initialized");
+    ESP_LOGI(stack_tag, "Stack Screen initialized");
     return ESP_OK;
 }
 
@@ -42,19 +42,19 @@ esp_err_t controller_screen_init(StackScreen** stack_screen) {
  * @return esp_err_t ESP_OK on success or ESP_ERR_INVALID_ARG if the
  * screen is invalid.
  */
-esp_err_t controller_screen_add(StackScreen* stack_screen, ScreenInterface* screen) {
+esp_err_t controllerScreenAdd(StackScreen* stack_screen, ScreenInterface* screen) {
     if (!screen) {
-        ESP_LOGE(STACK_TAG, "Invalid screen");
+        ESP_LOGE(stack_tag, "Invalid screen");
         return ESP_ERR_INVALID_ARG;
     }
-    if (stack_screen->head != NULL) {
+    if (NULL != stack_screen->head) {
         screen->previous = stack_screen->current;
     } else {
         stack_screen->head = screen;
         screen->previous   = NULL;
     }
     stack_screen->current = screen;
-    ESP_LOGI(STACK_TAG, "Stack Screen added");
+    ESP_LOGI(stack_tag, "Stack Screen added");
     return ESP_OK;
 }
 
@@ -71,16 +71,16 @@ esp_err_t controller_screen_add(StackScreen* stack_screen, ScreenInterface* scre
  * @return esp_err_t ESP_OK on success or ESP_ERR_NOT_FOUND if no previous
  * screen exists.
  */
-esp_err_t controller_screen_pop(StackScreen* stack_screen, ScreenInterface* screen) {
-    if (stack_screen->current == NULL || stack_screen->current->previous == NULL ||
+esp_err_t controllerScreenPop(StackScreen* stack_screen, ScreenInterface* screen) {
+    if (NULL == stack_screen->current || NULL == stack_screen->current->previous ||
         stack_screen->head == stack_screen->current) {
-        ESP_LOGE(STACK_TAG, "No previous screen");
+        ESP_LOGE(stack_tag, "No previous screen");
         return ESP_ERR_NOT_FOUND;
     }
     screen = stack_screen->current->previous;
     stack_screen->current->destroy(stack_screen->current);
     stack_screen->current = screen;
-    ESP_LOGI(STACK_TAG, "Back to previous screen");
+    ESP_LOGI(stack_tag, "Back to previous screen");
     return ESP_OK;
 }
 
@@ -98,13 +98,13 @@ esp_err_t controller_screen_pop(StackScreen* stack_screen, ScreenInterface* scre
  * screen exists, or ESP_ERR_INVALID_STATE if the current screen's draw
  * function is not set.
  */
-esp_err_t controller_screen_draw(StackScreen* stack_screen) {
-    if (stack_screen->current == NULL) {
-        ESP_LOGE(STACK_TAG, "No current screen to draw");
+esp_err_t controllerScreenDraw(StackScreen* stack_screen) {
+    if (NULL == stack_screen->current) {
+        ESP_LOGE(stack_tag, "No current screen to draw");
         return ESP_ERR_NOT_FOUND;
     }
-    if (stack_screen->current->draw == NULL) {
-        ESP_LOGE(STACK_TAG, "No draw function for current screen");
+    if (NULL == stack_screen->current->draw) {
+        ESP_LOGE(stack_tag, "No draw function for current screen");
         return ESP_ERR_INVALID_STATE;
     }
     return stack_screen->current->draw(stack_screen->current);

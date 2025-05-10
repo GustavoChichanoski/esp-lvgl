@@ -14,10 +14,10 @@ typedef struct {
     ScreenInterface* head;
 } StackScreen;
 
-esp_err_t controller_screen_init(StackScreen** stack_screen);
-esp_err_t controller_screen_draw(StackScreen* stack_screen);
-esp_err_t controller_screen_put(StackScreen* stack_screen, ScreenInterface* screen);
-esp_err_t controller_screen_pop(StackScreen* stack_screen, ScreenInterface* screen);
+esp_err_t controllerScreenInit(StackScreen** stack_screen);
+esp_err_t controllerScreenDraw(StackScreen* stack_screen);
+esp_err_t controllerScreenPut(StackScreen* stack_screen, ScreenInterface* screen);
+esp_err_t controllerScreenPop(StackScreen* stack_screen, ScreenInterface* screen);
 
 #ifdef __cplusplus
 } /*extern "C"*/

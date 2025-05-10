@@ -4,22 +4,26 @@ If:
 CompileFlags:
   Add:
     [
-      -DLV_CONF_SKIP,
-      -DLV_USE_ST7789=1,
-      -IC:/Espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/lib/gcc/xtensa-esp-elf/14.2.0/include,
+      -D__XTENSA__,
+      -IC:/Users/meupc/esp/v5.4/esp-idf/components,
       -IC:/Espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include,
+      -IC:/Espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/picolibc/include,
+      -IC:/Espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/lib/gcc/xtensa-esp-elf/14.2.0/include,
+      -IC:/Espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/lib/gcc/xtensa-esp-elf/14.2.0/install-tools,
+      -IC:/Espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/lib/gcc/xtensa-esp-elf/14.2.0/install-tools/include,
+      -IC:/Espressif/frameworks/esp-idf-v5.4/components/hal/include,
+      -IC:/Espressif/frameworks/esp-idf-v5.4/components/esp_rom/include,
+      -IC:/Espressif/frameworks/esp-idf-v5.4/components/esp_common/include,
     ]
-  Remove: [-m*, -f*]
-  Compiler: C:/Espressif/tools/xtensa-esp32-elf-gcc/esp-14.2.0_20241119/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc.exe
+  Remove:
+    - -m*
+    - -f*
+  Compiler: C:/Espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/xtensa-esp32-elf-gcc.exe
   CompilationDatabase: build
 
 Index:
-  Background: Skip # Disable slow background indexing of these files.
+  Background: Skip
   StandardLibrary: No
 
 Diagnostics:
   UnusedIncludes: Strict
-
-  ClangTidy:
-    CheckOptions:
-      readability-identifier-naming.VariableCase: SnakeCase
